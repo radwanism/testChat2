@@ -5,7 +5,7 @@ import uuid
 from dotenv import load_dotenv
 
 # Import the RAG chain implementation
-from bot.rag_chain import RAGChain
+from app.bot.rag_chain import RAGChain
 
 # Load environment variables
 load_dotenv()
