@@ -3,8 +3,8 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 import uuid
 
-from app.bot.rag_chain import RAGChain
-from app.utils.pdf_processor import PDFProcessor
+from bot.rag_chain import RAGChain
+from utils.pdf_processor import PDFProcessor
 
 router = APIRouter(prefix="/api", tags=["rag"])
 
