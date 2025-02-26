@@ -250,7 +250,12 @@ testChat2/
 ├── Dockerfile                # Docker configuration
 └── README.md                 # Project documentation
 ```
+## Acknowledgments
 
+- [LangChain](https://github.com/langchain-ai/langchain) for the RAG framework
+- [Google Gemini](https://ai.google.dev/) for the AI models
+- [FastAPI](https://fastapi.tiangolo.com/) for the API framework
+- [Gradio](https://gradio.app/) for the web interface
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
