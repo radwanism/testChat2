@@ -3,8 +3,8 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from app.api.routes import router as api_router
-from app.bot.rag_chain import RAGChain
+from api.routes import router as api_router
+from bot.rag_chain import RAGChain
 
 # Load environment variables
 load_dotenv()
