@@ -3,8 +3,8 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 import uuid
 
-from bot.rag_chain import RAGChain
-from utils.pdf_processor import PDFProcessor
+from app.bot.rag_chain import RAGChain
+from app.utils.pdf_processor import PDFProcessor
 
 router = APIRouter(prefix="/api", tags=["rag"])
 
@@ -119,3 +119,8 @@ async def clear_chat_history(
     rag_chain.clear_session(session_id)
     
     return {"status": "success", "message": f"Chat history for session {session_id} cleared"}
+
+# test endoint to check the api is working
+@router.get("/test")
+async def test():
+    return {"message": "API is working"}

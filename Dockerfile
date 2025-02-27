@@ -30,13 +30,17 @@ RUN echo '#!/bin/bash\n\
 if [ "$1" = "api" ]; then\n\
   uvicorn app.main:app --host 0.0.0.0 --port 8000\n\
 elif [ "$1" = "gradio" ]; then\n\
-  python app.py\n\
+  python gradio_app.py\n\
+elif [ "$1" = "bot" ]; then\n\
+  python app/bot/telegram_bot.py\n\
 else\n\
   python -c "import subprocess; \
   api = subprocess.Popen([\"uvicorn\", \"app.main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]); \
-  gradio = subprocess.Popen([\"python\", \"app.py\"]); \
+  gradio = subprocess.Popen([\"python\", \"gradio_app.py\"]); \
+  bot = subprocess.Popen([\"python\", \"app/bot/telegram_bot.py\"]); \
   api.wait(); \
-  gradio.wait()"\n\
+  gradio.wait(); \
+  bot.wait()"\n\
 fi' > /app/start.sh
 
 RUN chmod +x /app/start.sh
@@ -44,6 +48,5 @@ RUN chmod +x /app/start.sh
 # Set the entrypoint
 ENTRYPOINT ["/app/start.sh"]
 
-# Default command (run both API and Gradio)
-#CMD ["both"]
-CMD ["python", "app.py"]
+# Default command (run API, Gradio, and Telegram bot)
+CMD ["both"]

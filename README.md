@@ -4,25 +4,23 @@ A Python-based application that uses AI/ML techniques to create a chatbot capabl
 
 ## 📋 Table of Contents
 
-- [Features](#features)
-- [Architecture](#architecture)
-- [Technologies Used](#technologies-used)
-- [Setup Instructions](#setup-instructions)
+- [Features](#-features)
+- [Architecture](#-architecture)
+- [Technologies Used](#-technologies-used)
+- [Setup Instructions](#-setup-instructions)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Configuration](#configuration)
-  - [Running with Docker](#running-with-docker)
   - [Running Locally](#running-locally)
-- [API Documentation](#api-documentation)
-  - [Document Management Endpoints](#document-management-endpoints)
-  - [Chat Interaction Endpoints](#chat-interaction-endpoints)
-- [User Interfaces](#user-interfaces)
+  - [Running with Docker](#running-with-docker)
+- [API Documentation](#-api-documentation)
+- [User Interfaces](#-user-interfaces)
   - [Web Interface (Gradio)](#web-interface-gradio)
   - [API Interface](#api-interface)
   - [Telegram Bot](#telegram-bot)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
+- [Project Structure](#-project-structure)
+- [Acknowledgments](#-acknowledgments)
+- [Contributing](#-contributing)
 
 ## ✨ Features
 
@@ -100,18 +98,6 @@ The application follows a three-tier architecture:
    mkdir -p uploads
    ```
 
-### Running with Docker
-
-1. Build the Docker image:
-   ```bash
-   docker build -t pdf-rag-chatbot .
-   ```
-
-2. Run the container:
-   ```bash
-   docker run -p 8000:8000 -p 7860:7860 -e GOOGLE_API_KEY=your_google_api_key pdf-rag-chatbot
-   ```
-
 ### Running Locally
 
 1. Start the FastAPI server:
@@ -129,75 +115,39 @@ The application follows a three-tier architecture:
    # The bot can be started by importing and running TelegramBot from the application
    ```
 
-## 📚 API Documentation
 
-The application provides a RESTful API for interacting with the chatbot.
+### Running with Docker
 
-### Document Management Endpoints
+Build the Docker image:
+```bash
+docker build -t pdf-rag-chatbot .
+```
 
-#### `POST /api/upload-pdfs`
-Upload PDF documents for processing.
+Run the container with both API and Gradio:
+```bash
+docker run -p 8000:8000 -p 7860:7860 --env-file .env pdf-rag-chatbot
+```
 
-- **Request**: Multipart form with PDF files
-- **Response**: List of file paths where PDFs are saved
-- **Example**:
-  ```bash
-  curl -X POST -F "files=@sample.pdf" http://localhost:8000/api/upload-pdfs
-  ```
+Or run only the API:
+```bash
+docker run -p 8000:8000 --env-file .env pdf-rag-chatbot api
+```
 
-#### `GET /api/pdfs`
-Get a list of all available PDFs.
+Or run only Gradio:
+```bash
+docker run -p 7860:7860 --env-file .env pdf-rag-chatbot gradio
+```
 
-- **Response**: JSON object with PDF information
-- **Example**:
-  ```bash
-  curl http://localhost:8000/api/pdfs
-  ```
 
-#### `DELETE /api/pdfs/{filename}`
-Delete a specific PDF file.
+## API Endpoints
 
-- **Response**: Success message
-- **Example**:
-  ```bash
-  curl -X DELETE http://localhost:8000/api/pdfs/sample.pdf
-  ```
+- POST /api/upload-pdfs: Upload PDF files
+- GET /api/pdfs: Get list of available PDFs
+- DELETE /api/pdfs/{filename}: Delete a specific PDF
+- DELETE /api/pdfs: Delete all PDFs
+- POST /api/chat: Chat with the loaded PDFs
+- DELETE /api/chat/{session_id}: Clear chat history for a session
 
-#### `DELETE /api/pdfs`
-Delete all PDF files.
-
-- **Response**: Success message
-- **Example**:
-  ```bash
-  curl -X DELETE http://localhost:8000/api/pdfs
-  ```
-
-### Chat Interaction Endpoints
-
-#### `POST /api/chat`
-Send a message to the chatbot and receive a response.
-
-- **Request**: JSON object with message and optional session_id
-  ```json
-  {
-    "message": "What information is in the document?",
-    "session_id": "optional-session-id"
-  }
-  ```
-- **Response**: Chatbot response and session ID
-- **Example**:
-  ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{"message": "What is in the document?"}' http://localhost:8000/api/chat
-  ```
-
-#### `DELETE /api/chat/{session_id}`
-Clear chat history for a specific session.
-
-- **Response**: Success message
-- **Example**:
-  ```bash
-  curl -X DELETE http://localhost:8000/api/chat/session-123
-  ```
 
 ## 👥 User Interfaces
 
@@ -228,28 +178,6 @@ The Telegram bot allows users to interact with the chatbot through Telegram.
 
 ## 📁 Project Structure
 
-```
-testChat2/
-├── app/
-│   ├── api/
-│   │   ├── __init__.py
-│   │   └── routes.py         # API endpoints
-│   ├── bot/
-│   │   ├── __init__.py
-│   │   ├── rag_chain.py      # RAG implementation
-│   │   └── telegram_bot.py   # Telegram bot implementation
-│   ├── utils/
-│   │   ├── __init__.py
-│   │   └── pdf_processor.py  # PDF handling utilities
-│   ├── __init__.py
-│   └── main.py               # FastAPI app entry point
-├── uploads/                  # Directory for uploaded PDFs
-├── .env                      # Environment variables
-├── gradio_app.py             # Gradio web interface
-├── requirements.txt          # Project dependencies
-├── Dockerfile                # Docker configuration
-└── README.md                 # Project documentation
-```
 ## Acknowledgments
 
 - [LangChain](https://github.com/langchain-ai/langchain) for the RAG framework

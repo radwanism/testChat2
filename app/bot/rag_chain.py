@@ -27,6 +27,7 @@ class RAGChain:
             max_tokens=None,
             timeout=None,
             max_retries=2,
+            streaming=True
         )
         
         self.embedding = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
@@ -112,7 +113,27 @@ class RAGChain:
             config={"configurable": {"session_id": session_id}}
         )
         return response["answer"]
-    
+
+    def query_stream(self, message: str, session_id: str):
+        """Process a user message and return a streaming response."""
+        if not self.vectorstore or not self.conversational_rag_chain:
+            yield "Please load PDF documents first."
+            return
+        
+        response_text = ""
+        for chunk in self.conversational_rag_chain.stream(
+            {"input": message},
+            config={"configurable": {"session_id": session_id}}
+        ):
+            print(f'chunk type: {type(chunk)}')
+            try:
+                chunk_text = chunk.content
+            except:
+                chunk_text = chunk
+            response_text += chunk_text
+            yield chunk_text
+
+            
     def clear_session(self, session_id: str) -> None:
         """Clear the chat history for a specific session."""
         if session_id in self.session_store:

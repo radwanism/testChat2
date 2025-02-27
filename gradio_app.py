@@ -1,6 +1,5 @@
 import os
 import gradio as gr
-import tempfile
 import uuid
 from dotenv import load_dotenv
 
@@ -23,9 +22,7 @@ def process_pdfs(pdf_files):
         return "No PDF files uploaded"
         
     # Save PDFs to temporary directory
-    pdf_paths = []
-    for pdf_file in pdf_files:
-        pdf_paths.append(pdf_file.name)
+    pdf_paths = [pdf_file.name for pdf_file in pdf_files]
     
     # Load PDFs into RAG chain
     rag_chain.load_pdfs(pdf_paths)
@@ -33,18 +30,19 @@ def process_pdfs(pdf_files):
     return f"Processed {len(pdf_paths)} PDF files: {', '.join(os.path.basename(path) for path in pdf_paths)}"
 
 def respond(message, chat_history, session_id):
-    """Process a user message and update the chat history."""
+    """Stream response while updating chat history."""
     if not session_id:
-        # Generate a new session ID if none exists
         session_id = str(uuid.uuid4())
-        
-    # Get response from RAG chain
-    bot_response = rag_chain.query(message, session_id)
+
+    chat_history.append((message, ""))  # Append user message with empty bot response
     
-    # Update chat history
-    chat_history.append((message, bot_response))
+    response_generator = rag_chain.query(message, session_id)  # Streaming response
     
-    return "", chat_history, session_id
+    bot_response = ""
+    for chunk in response_generator:
+        bot_response += chunk
+        chat_history[-1] = (message, bot_response)  # Update chat history in real-time
+        yield "", chat_history, session_id  # Stream response updates
 
 def clear_chat(chat_history, session_id):
     """Clear the chat history for the current session."""
@@ -78,7 +76,8 @@ with gr.Blocks(title="PDF RAG Chatbot") as demo:
         with gr.Column(scale=3):
             # Chat section
             session_id = gr.State("")
-            chatbot = gr.Chatbot(label="Chat with your PDFs")
+            chatbot = gr.Chatbot(label="Chat with your PDFs")  # Enable streaming
+            
             with gr.Row():
                 msg = gr.Textbox(
                     label="Your message",
